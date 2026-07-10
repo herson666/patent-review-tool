@@ -3,30 +3,45 @@
 set -euo pipefail
 cd "$GITHUB_WORKSPACE"
 
-# Install NSIS (Windows runner)
-if ! command -v makensis >/dev/null; then
-  echo "Installing NSIS..."
-  choco install nsis -y --no-progress 2>/dev/null || \
-    echo "::warning::NSIS not installed; using makensis if available"
-fi
+echo "==> PyInstaller dist/ contents:"
+ls -la dist/ || true
 
-# Use spec-file-based approach; assume App/app.exe or App/App.exe exists in dist
-if [ ! -d "dist/App" ] && [ ! -d "dist/App/_internal" ]; then
-  echo "::error::Expected dist/App/ from PyInstaller"
+# PyInstaller --onedir --windowed output:
+#   dist/App/App.exe
+#   dist/App/_internal/... (Python runtime + data)
+EXPECT_APP="dist/App/App.exe"
+if [ ! -f "$EXPECT_APP" ]; then
+  echo "::error::Expected $EXPECT_APP from PyInstaller (got:)"
+  find dist -maxdepth 3 -type f 2>/dev/null || true
   exit 1
 fi
 
-# Generate NSIS script on-the-fly
-cat > /tmp/installer.nsi <<'NSIS_EOF'
+# Install NSIS if missing (windows-latest runners have choco pre-installed)
+if ! command -v makensis >/dev/null 2>&1; then
+  echo "==> Installing NSIS via Chocolatey..."
+  choco install nsis -y --no-progress 2>&1 | tail -10
+fi
+
+if ! command -v makensis >/dev/null 2>&1; then
+  echo "::error::makensis not found after install. NSIS install failed."
+  exit 1
+fi
+
+VERSION="${VERSION:-0.0.0}"
+APP_NAME="PatentReviewTool"
+APP_EXE="App.exe"
+
+# Generate NSIS script
+cat > installer.nsi <<NSIS_EOF
 Unicode True
 SetCompressor /SOLID lzma
-!define APP_NAME "App"
-!define APP_VERSION "0.0.0"
-!define APP_EXE "App.exe"
+!define APP_NAME "${APP_NAME}"
+!define APP_VERSION "${VERSION}"
+!define APP_EXE "${APP_EXE}"
 
-Name "${APP_NAME} v${APP_VERSION}"
-OutFile "dist/App-setup.exe"
-InstallDir "$PROGRAMFILES64\${APP_NAME}"
+Name "\${APP_NAME} v\${APP_VERSION}"
+OutFile "dist\${APP_NAME}-setup.exe"
+InstallDir "\$PROGRAMFILES64\\\${APP_NAME}"
 RequestExecutionLevel admin
 
 !include "MUI2.nsh"
@@ -34,35 +49,35 @@ RequestExecutionLevel admin
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
-!insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "SimpChinese"
 
 Section "Main"
   SectionIn RO
-  SetOutPath "$INSTDIR"
-  File /r "dist\App\*"
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
-  CreateShortcut "$SMPROGRAMS\App.lnk" "$INSTDIR\${APP_EXE}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\App" \
-    "UninstallString" '"$INSTDIR\Uninstall.exe"'
+  SetOutPath "\$INSTDIR"
+  File /r "dist\\App\\*"
+  WriteUninstaller "\$INSTDIR\\Uninstall.exe"
+  CreateDirectory "\$SMPROGRAMS\\\${APP_NAME}"
+  CreateShortcut "\$SMPROGRAMS\\\${APP_NAME}\\\${APP_NAME}.lnk" "\$INSTDIR\\\${APP_EXE}"
+  CreateShortcut "\$DESKTOP\\\${APP_NAME}.lnk" "\$INSTDIR\\\${APP_EXE}"
+  WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\\${APP_NAME}" \\
+    "DisplayName" "\${APP_NAME}"
+  WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\\${APP_NAME}" \\
+    "DisplayVersion" "\${APP_VERSION}"
+  WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\\${APP_NAME}" \\
+    "UninstallString" '"\$INSTDIR\\Uninstall.exe"'
 SectionEnd
 
 Section "Uninstall"
-  RMDir /r "$INSTDIR"
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\App"
+  RMDir /r "\$INSTDIR"
+  RMDir /r "\$SMPROGRAMS\\\${APP_NAME}"
+  Delete "\$DESKTOP\\\${APP_NAME}.lnk"
+  DeleteRegKey HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\\${APP_NAME}"
 SectionEnd
 NSIS_EOF
 
-VERSION="${VERSION:-0.0.0}"
-sed -i "s|\${APP_VERSION}|$VERSION|g" /tmp/installer.nsi
+echo "==> Running makensis..."
+makensis /V2 installer.nsi
 
-# Copy dist contents to a flat location for NSIS
-mkdir -p nsis-build
-cp -r dist/App/* nsis-build/ 2>/dev/null || cp -r dist/App nsis-build/
-# Adjust File path in NSIS
-sed -i "s|dist\\\\App\\\\|nsis-build\\\\|g" /tmp/installer.nsi 2>/dev/null || true
-sed -i 's|dist\\App\\|nsis-build\\|g' /tmp/installer.nsi 2>/dev/null || true
-mv /tmp/installer.nsi ./installer.nsi
-
-makensis installer.nsi || die "NSIS build failed"
-rm -rf nsis-build installer.nsi
-echo "NSIS installer built: dist/App-setup.exe"
+rm -f installer.nsi
+echo "==> NSIS installer built: dist/${APP_NAME}-setup.exe"
+ls -la dist/
