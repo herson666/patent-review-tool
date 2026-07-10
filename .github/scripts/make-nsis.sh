@@ -22,10 +22,34 @@ if ! command -v makensis >/dev/null 2>&1; then
   choco install nsis -y --no-progress 2>&1 | tail -10
 fi
 
-if ! command -v makensis >/dev/null 2>&1; then
-  echo "::error::makensis not found after install. NSIS install failed."
+# Locate makensis.exe (choco deploys to Program Files (x86) but doesn't refresh PATH)
+MAKENSIS_BIN="$(command -v makensis 2>/dev/null || true)"
+if [ -z "$MAKENSIS_BIN" ]; then
+  for cand in \
+      "/c/Program Files (x86)/NSIS/makensis.exe" \
+      "/c/Program Files/NSIS/makensis.exe" \
+      "/c/ProgramData/chocolatey/bin/makensis.exe" \
+      "C:/Program Files (x86)/NSIS/makensis.exe" \
+      "C:/Program Files/NSIS/makensis.exe"; do
+    if [ -x "$cand" ] || [ -f "$cand" ]; then
+      MAKENSIS_BIN="$cand"
+      break
+    fi
+  done
+fi
+
+if [ -z "$MAKENSIS_BIN" ]; then
+  echo "::error::makensis not found. NSIS install failed."
   exit 1
 fi
+
+# Add NSIS dir to PATH for the current session (makensis may call other tools)
+NSIS_DIR="$(dirname "$MAKENSIS_BIN")"
+case ":$PATH:" in
+  *":$NSIS_DIR:"*) ;;
+  *) export PATH="$NSIS_DIR:$PATH" ;;
+esac
+echo "==> Using makensis: $MAKENSIS_BIN"
 
 VERSION="${VERSION:-0.0.0}"
 APP_NAME="PatentReviewTool"
