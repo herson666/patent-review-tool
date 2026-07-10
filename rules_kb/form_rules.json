@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "law_reference_doc": "中华人民共和国专利法实施细则（2024-01-20施行）+ 审查指南",
+  "rules": [
+    {"id": "CLAIMS-001", "severity": "error", "section": "claims", "description": "多项权利要求应当用阿拉伯数字顺序编号", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-002", "severity": "warning", "section": "claims", "description": "从属权利要求应当尽量紧靠其所引用的权利要求", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-003", "severity": "warning", "section": "claims", "description": "每一项权利要求只允许在其结尾使用句号", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-004", "severity": "warning", "section": "claims", "description": "权利要求中使用的科技术语应当与说明书中一致", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-005", "severity": "error", "section": "claims", "description": "权利要求中不得有插图", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-006", "severity": "warning", "section": "claims", "description": "除非绝对必要，不得使用如说明书…所述的引用语", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-007", "severity": "warning", "section": "claims", "description": "权利要求中通常不允许使用表格", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-008", "severity": "error", "section": "claims", "description": "附图标记应当放在括号内", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-009", "severity": "warning", "section": "claims", "description": "附图标记不得解释为对权利要求保护范围的限制", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-010", "severity": "warning", "section": "claims", "description": "除附图标记必要情形外，应当尽量避免使用括号", "law_reference": "实施细则第22条"},
+    {"id": "CLAIMS-011", "severity": "error", "section": "claims", "description": "从属权利要求只能引用在前的权利要求", "law_reference": "实施细则第25条"},
+    {"id": "DESC-001", "severity": "error", "section": "description", "description": "说明书缺少技术领域部分", "law_reference": "实施细则第20条"},
+    {"id": "DESC-002", "severity": "error", "section": "description", "description": "说明书缺少背景技术部分", "law_reference": "实施细则第20条"},
+    {"id": "DESC-003", "severity": "error", "section": "description", "description": "说明书缺少发明内容部分", "law_reference": "实施细则第20条"},
+    {"id": "DESC-004", "severity": "warning", "section": "description", "description": "说明书缺少附图说明部分（当有附图时）", "law_reference": "实施细则第20条"},
+    {"id": "DESC-005", "severity": "error", "section": "description", "description": "说明书缺少具体实施方式部分", "law_reference": "实施细则第20条"},
+    {"id": "DESC-006", "severity": "error", "section": "description", "description": "说明书不得使用如权利要求…所述的引用语", "law_reference": "实施细则第20条"},
+    {"id": "DESC-007", "severity": "error", "section": "description", "description": "说明书不得使用商业性宣传用语", "law_reference": "实施细则第20条"},
+    {"id": "DESC-008", "severity": "warning", "section": "description", "description": "说明书各部分顺序不符合规范", "law_reference": "实施细则第20条"},
+    {"id": "ABSTRACT-001", "severity": "error", "section": "abstract", "description": "说明书摘要不得超过300字", "law_reference": "实施细则第26条"},
+    {"id": "ABSTRACT-002", "severity": "error", "section": "abstract", "description": "摘要缺少发明名称", "law_reference": "实施细则第26条"},
+    {"id": "FIGURES-001", "severity": "warning", "section": "figures", "description": "说明书附图应当按图1，图2…顺序编号排列", "law_reference": "实施细则第21条"},
+    {"id": "FIGURES-002", "severity": "warning", "section": "figures", "description": "附图中除必需的词语外，不应当含有其他注释", "law_reference": "实施细则第21条"}
+  ]
+}

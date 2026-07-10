@@ -1,0 +1,65 @@
+# Build artifacts
+build/
+dist/
+target/
+*.exe
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.AppImage
+*.apk
+*.aab
+*.ipa
+*.msi
+*.whl
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Rust
+Cargo.lock
+target/
+
+# Go
+vendor/
+
+# Java
+.gradle/
+build/
+*.class
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Test
+coverage/
+.nyc_output/
+tests/
+docs/
+开发需求.txt
+form_check_rules.md
+scripts/
+*.docx
+
+# 用户运行时数据
+~/PatentReviewTool/
