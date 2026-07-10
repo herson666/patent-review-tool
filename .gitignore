@@ -56,10 +56,10 @@ coverage/
 .nyc_output/
 tests/
 docs/
-开发需求.txt
-form_check_rules.md
-scripts/
+/scripts/
 *.docx
+form_check_rules.md
+开发需求.txt
 
 # 用户运行时数据
 ~/PatentReviewTool/
