@@ -105,6 +105,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with: { dotnet-version: '8.0.x' }
       - name: Build
+        shell: bash
         run: ./.github/scripts/build.sh
       - uses: actions/upload-artifact@v4
         with:
@@ -198,6 +199,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with: { dotnet-version: '8.0.x' }
       - name: Build
+        shell: bash
         run: ./.github/scripts/build.sh
       - uses: actions/upload-artifact@v4
         with:
@@ -244,12 +246,13 @@ jobs:
         uses: actions/setup-dotnet@v4
         with: { dotnet-version: '8.0.x' }
       - name: Build
+        shell: bash
         run: ./.github/scripts/build.sh
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ needs.detect.outputs.stack || 'app' }}-android
           path: dist/
-          if-no-files-found: ignore
+          if-no-files-found: warn
 
   build-ios:
     name: Build (ios)
